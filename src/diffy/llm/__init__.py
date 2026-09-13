@@ -1,0 +1,1 @@
+"""Approved LLM endpoint boundary."""

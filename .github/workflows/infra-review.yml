@@ -1,0 +1,32 @@
+name: Infrastructure Review
+
+on:
+  pull_request:
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - "**/*.yaml"
+      - "**/*.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install .
+      - name: Analyze infrastructure diff
+        run: |
+          git diff --unified=0 "origin/${{ github.base_ref }}...HEAD" > change.diff
+          diffy analyze --diff change.diff --output review.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diffy-review
+          path: review.json
