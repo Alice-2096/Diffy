@@ -20,3 +20,15 @@ jobs:
       - run: python -m pip install -e '.[dev]'
       - run: ruff check .
       - run: pytest
+
+  local-rag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      # Exercise the real local store without downloading a model or PyTorch.
+      - run: python -m pip install -e '.[dev]' 'qdrant-client>=1.12,<2'
+      - run: pytest
